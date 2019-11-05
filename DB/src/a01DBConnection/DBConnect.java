@@ -17,17 +17,34 @@ class DBConnect {
 	 * @param strAccessDB
 	 * @return Conncetion
 	 */
-	public static Connection getConnection(){
+	public static Connection getConnectionTestDB(){
 		try {
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
 			
 			//Pfad zur DB z.B.: "c:\\db\\mydb.accdb"
-			String pathStat = "/Users/nh/Nextcloud2/Statistik/2018/2018/stat2018.accdb";
-			String pathDeputat = "/Users/nh/Nextcloud2/SSDB/deputat.mdb";
-			
-					
+			String path = "src/quellen/Projektverwaltung.mdb";
+						
 			//URL zur DB
-            String url="jdbc:ucanaccess://"+pathDeputat;
+            String url="jdbc:ucanaccess://"+path;
+			
+			con = DriverManager.getConnection(url);
+			
+			System.out.println("Connected zu DB");
+			
+		} catch (Exception e) {
+			System.out.println("Error");
+			JOptionPane.showMessageDialog(null, "Keine Verbindung zur DB", "Connection Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		return con;
+	}
+	
+	public static Connection getConnection(String path){
+		try {
+			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
+						
+			//URL zur DB
+            String url="jdbc:ucanaccess://"+path;
 			
 			con = DriverManager.getConnection(url);
 			

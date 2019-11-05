@@ -22,14 +22,14 @@ public class MyFiles {
 		// DB Datei auswählen Dialog
 		JFileChooser fc = new JFileChooser();
 
-		// Nur Access DB Dateien öffnen
+		// Nur Access DB Dateien oeffnen
 		FileFilter filter = new FileNameExtensionFilter("accdb", "mdb");
 		fc.addChoosableFileFilter(filter);
 
 		// Dialog zum Oeffnen von Dateien anzeigen
 		int returnValue = fc.showOpenDialog(parent);
 
-		/* Abfrage, ob auf "Öffnen" geklickt wurde */
+		/* Abfrage, ob auf oeffnen" geklickt wurde */
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 
 			fileDB = fc.getSelectedFile();
@@ -51,7 +51,7 @@ public class MyFiles {
 			FileOutputStream fos = new FileOutputStream(fDes); // Stream fuer
 																// Zieldatei
 
-			byte buf[] = new byte[1024]; // Buffer für gelesene Daten
+			byte buf[] = new byte[1024]; // Buffer f�r gelesene Daten
 			while (fis.read(buf) != -1) { // solange lesen, bis EOF
 				fos.write(buf); // Inhalt schreiben
 			}

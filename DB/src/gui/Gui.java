@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.sql.Connection;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -20,13 +21,17 @@ import java.awt.Panel;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
+import a01DBConnection.*;
 
 
 public class Gui extends JFrame {
 
 	private JPanel contentPane;
+	private JMenuItem mntmSpeichernUnter;
 	/**
 	 * Launch the application.
 	 */
@@ -47,6 +52,27 @@ public class Gui extends JFrame {
 	 * Create the frame.
 	 */
 	public Gui() {
+		
+		//System Look and feel
+		try {
+			UIManager.setLookAndFeel(
+			        UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
 		//Vollbild
 		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		
@@ -60,8 +86,19 @@ public class Gui extends JFrame {
 		JMenu mnDatei = new JMenu("Datei");
 		menuBar.add(mnDatei);
 		
-		JMenuItem mntmImport = new JMenuItem("Import ");
+		JMenuItem mntmImport = new JMenuItem("DB Importieren");
 		mnDatei.add(mntmImport);
+		
+		mntmSpeichernUnter = new JMenuItem("Speichern unter...");
+		mntmSpeichernUnter.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clickSaveAs();
+				
+			}
+		});
+		mnDatei.add(mntmSpeichernUnter);
 		
 		JMenu mnStammdaten = new JMenu("Stammdaten");
 		menuBar.add(mnStammdaten);
@@ -105,15 +142,26 @@ public class Gui extends JFrame {
 
 	
 
+	protected void clickSaveAs() {
+		
+		
+	}
+
 	protected void clickImport() {
-		//DB Ã¶ffnen
+		//DB öffnen
 		File fileDB = MyFiles.openFile(this);
-		Path pathQuellen = FileSystems.getDefault().getPath("src", "quellen");
 		
-		//Kopie der Datei lokal speichern
-		MyFiles.saveFile(fileDB, pathQuellen.toString());
+		//Dialog save as anbieten
+		mntmSpeichernUnter.setEnabled(true);
 		
-		//Verbindung zur lokalen DB herstellen
+		//Verbindung zur Datenbank aufbauen
+		String path = fileDB.getAbsolutePath();
+		Connection con = DBConnect.getConnection(path);
+		
+		//Testausgabe
+		DBConnect.listTables();
+		DBConnect.showTable("Freund");
+		
 		
 	
 	}
