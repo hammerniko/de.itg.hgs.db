@@ -5,38 +5,35 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.sql.Connection;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.CardLayout;
-import java.awt.Panel;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.JButton;
-import javax.swing.JTabbedPane;
-import a01DBConnection.*;
-import javax.swing.JDesktopPane;
-import javax.swing.JSplitPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.SwingConstants;
+import java.awt.Component;
+import javax.swing.border.BevelBorder;
 
 public class Gui extends JFrame implements Querys{
 
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
 	private JList<String> listTables;
+	private JTable table;
+	private JLabel lblStatus;
 
 	/**
 	 * Launch the application.
@@ -98,7 +95,7 @@ public class Gui extends JFrame implements Querys{
 		JMenuItem mntmLehrer = new JMenuItem("Lehrer");
 		mnStammdaten.add(mntmLehrer);
 
-		JMenuItem mntmRume = new JMenuItem("RÃ¤ume");
+		JMenuItem mntmRume = new JMenuItem("Räume");
 		mnStammdaten.add(mntmRume);
 
 		JMenuItem mntmKlassen = new JMenuItem("Klassen");
@@ -124,22 +121,62 @@ public class Gui extends JFrame implements Querys{
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		final JPanel panelStatus = new JPanel();
+		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
 		
 		listTables = new JList<String>();
+		listTables.setBorder(new CompoundBorder());
+		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listTables.setVisibleRowCount(15);
 		JPanel panelTables = new JPanel();
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.getViewport().setView(listTables);
+		panelTables.setLayout(new BoxLayout(panelTables, BoxLayout.X_AXIS));
+		JScrollPane scrollPane = new JScrollPane(listTables);
+		//scrollPane.getViewport().setView(listTables);
 		panelTables.add(scrollPane);
-		panelTables.add(listTables);
+		
 		
 		JPanel panelData = new JPanel();
-		JScrollPane scrollPane_1 = new JScrollPane();
-		panelData.add(scrollPane_1);
+		panelData.setLayout(new BoxLayout(panelData, BoxLayout.X_AXIS));
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
+			}
+		));
+		JScrollPane scrollPaneData = new JScrollPane(table);
+		panelData.add(scrollPaneData);
 		
 		contentPane.add(panelData, BorderLayout.CENTER);
 		contentPane.add(panelTables, BorderLayout.WEST);
+		
+		JLabel lblNewLabel = new JLabel("Tabellen");
+		contentPane.add(lblNewLabel, BorderLayout.NORTH);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
+		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
+		
+		JLabel lblNewLabel_1 = new JLabel("Status:");
+		panelStatus.add(lblNewLabel_1);
+		
+		lblStatus = new JLabel("Ready");
+		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
+		panelStatus.add(lblStatus);
 		
 		
 
@@ -182,6 +219,7 @@ public class Gui extends JFrame implements Querys{
 		//Alle Tabellen der DB auflisten
 		DBConnect.listTables();
 		listTables.setListData(DBConnect.getlistOfTables());
+	    lblStatus.setText("DB geladen");
 
 	}
 }
