@@ -26,11 +26,17 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import a01DBConnection.*;
+import javax.swing.JDesktopPane;
+import javax.swing.JSplitPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JList;
 
 public class Gui extends JFrame implements Querys{
 
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
+	private JList<String> listTables;
 
 	/**
 	 * Launch the application.
@@ -118,7 +124,24 @@ public class Gui extends JFrame implements Querys{
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		final JPanel panelStatus = new JPanel();
+		
+		
+		listTables = new JList<String>();
+		JPanel panelTables = new JPanel();
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.getViewport().setView(listTables);
+		panelTables.add(scrollPane);
+		panelTables.add(listTables);
+		
+		JPanel panelData = new JPanel();
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panelData.add(scrollPane_1);
+		
+		contentPane.add(panelData, BorderLayout.CENTER);
+		contentPane.add(panelTables, BorderLayout.WEST);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
+		
+		
 
 	}
 
@@ -158,7 +181,7 @@ public class Gui extends JFrame implements Querys{
 
 		//Alle Tabellen der DB auflisten
 		DBConnect.listTables();
-		
+		listTables.setListData(DBConnect.getlistOfTables());
 
 	}
 }
