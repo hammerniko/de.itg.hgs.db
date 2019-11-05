@@ -71,7 +71,7 @@ public class Gui extends JFrame implements Querys{
 		JMenu mnDatei = new JMenu("Datei");
 		menuBar.add(mnDatei);
 
-		JMenuItem mntmImport = new JMenuItem("DB Importieren");
+		JMenuItem mntmImport = new JMenuItem("ODBC Datenbank Importieren");
 		mnDatei.add(mntmImport);
 
 		mntmSpeichernUnter = new JMenuItem("Speichern unter...");
