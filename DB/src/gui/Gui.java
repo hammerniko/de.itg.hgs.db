@@ -27,7 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import a01DBConnection.*;
 
-public class Gui extends JFrame {
+public class Gui extends JFrame implements Querys{
 
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
@@ -156,9 +156,9 @@ public class Gui extends JFrame {
 		String path = fileDB.getAbsolutePath();
 		Connection con = DBConnect.getConnection(path);
 
-		// Testausgabe
+		//Alle Tabellen der DB auflisten
 		DBConnect.listTables();
-		DBConnect.showTable("Freund");
+		
 
 	}
 }
