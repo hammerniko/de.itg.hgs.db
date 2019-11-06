@@ -13,6 +13,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MyFiles {
 
+	private static final String ERROR_TYPE_IO = "IO Error";
+	private static final String ERROR_MESSAGE_IO = "Schreib-Lese Fehler";
+	private static final String ERROR_MESSAGE_FILE_NOT_FOUND = "File not found";
 	static File fileDB;
 	static Gui parent;
 
@@ -62,14 +65,12 @@ public class MyFiles {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(parent, "File not found", "IO Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(parent, ERROR_MESSAGE_FILE_NOT_FOUND, ERROR_TYPE_IO, JOptionPane.ERROR_MESSAGE);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(parent, "Schreib-Lese Fehler", "IO Error", JOptionPane.ERROR_MESSAGE);
-			
-			
+			JOptionPane.showMessageDialog(parent, ERROR_MESSAGE_IO, ERROR_TYPE_IO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
