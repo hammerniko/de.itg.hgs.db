@@ -29,6 +29,19 @@ import javax.swing.border.BevelBorder;
 
 public class Gui extends JFrame implements Querys{
 
+	private static final String SKRIPT = "Skript";
+	private static final String ODBC_DATENBANK_IMPORTIEREN = "ODBC Datenbank Importieren";
+	private static final String SPEICHERN_UNTER = "Speichern unter...";
+	private static final String STAMMDATEN = "Stammdaten";
+	private static final String NACHLASSSTUNDEN = "Nachlassstunden";
+	private static final String LEHRER = "Lehrer";
+	private static final String RÄUME = "Räume";
+	private static final String KLASSEN = "Klassen";
+	private static final String HILFE = "Hilfe";
+	private static final String TABELLEN = "Tabellen";
+	private static final String STATUS_READY = "Ready";
+	private static final int ANZAHL_REIHEN_TABELLENLISTE = 15;
+	
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
 	private JList<String> listTables;
@@ -60,7 +73,6 @@ public class Gui extends JFrame implements Querys{
 
 		// Vollbild
 		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
-
 		setTitle("SSDB 0.1");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 871, 301);
@@ -71,10 +83,10 @@ public class Gui extends JFrame implements Querys{
 		JMenu mnDatei = new JMenu("Datei");
 		menuBar.add(mnDatei);
 
-		JMenuItem mntmImport = new JMenuItem("ODBC Datenbank Importieren");
+		JMenuItem mntmImport = new JMenuItem(ODBC_DATENBANK_IMPORTIEREN);
 		mnDatei.add(mntmImport);
 
-		mntmSpeichernUnter = new JMenuItem("Speichern unter...");
+		mntmSpeichernUnter = new JMenuItem(SPEICHERN_UNTER);
 		mntmSpeichernUnter.setEnabled(false);
 		mntmSpeichernUnter.addActionListener(new ActionListener() {
 
@@ -86,25 +98,25 @@ public class Gui extends JFrame implements Querys{
 		});
 		mnDatei.add(mntmSpeichernUnter);
 
-		JMenu mnStammdaten = new JMenu("Stammdaten");
+		JMenu mnStammdaten = new JMenu(STAMMDATEN);
 		menuBar.add(mnStammdaten);
 
-		JMenuItem mntmNachlassstunden = new JMenuItem("Nachlassstunden");
+		JMenuItem mntmNachlassstunden = new JMenuItem(NACHLASSSTUNDEN);
 		mnStammdaten.add(mntmNachlassstunden);
 
-		JMenuItem mntmLehrer = new JMenuItem("Lehrer");
+		JMenuItem mntmLehrer = new JMenuItem(LEHRER);
 		mnStammdaten.add(mntmLehrer);
 
-		JMenuItem mntmRume = new JMenuItem("Räume");
+		JMenuItem mntmRume = new JMenuItem(RÄUME);
 		mnStammdaten.add(mntmRume);
 
-		JMenuItem mntmKlassen = new JMenuItem("Klassen");
+		JMenuItem mntmKlassen = new JMenuItem(KLASSEN);
 		mnStammdaten.add(mntmKlassen);
 
-		JMenu mnHilfe = new JMenu("Hilfe");
+		JMenu mnHilfe = new JMenu(HILFE);
 		menuBar.add(mnHilfe);
 
-		JMenuItem mntmSkript = new JMenuItem("Skript");
+		JMenuItem mntmSkript = new JMenuItem(SKRIPT);
 		mnHilfe.add(mntmSkript);
 
 		mntmImport.addActionListener(new ActionListener() {
@@ -127,7 +139,7 @@ public class Gui extends JFrame implements Querys{
 		listTables = new JList<String>();
 		listTables.setBorder(new CompoundBorder());
 		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listTables.setVisibleRowCount(15);
+		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
 		JPanel panelTables = new JPanel();
 		panelTables.setLayout(new BoxLayout(panelTables, BoxLayout.X_AXIS));
 		JScrollPane scrollPane = new JScrollPane(listTables);
@@ -166,7 +178,7 @@ public class Gui extends JFrame implements Querys{
 		contentPane.add(panelData, BorderLayout.CENTER);
 		contentPane.add(panelTables, BorderLayout.WEST);
 		
-		JLabel lblNewLabel = new JLabel("Tabellen");
+		JLabel lblNewLabel = new JLabel(TABELLEN);
 		contentPane.add(lblNewLabel, BorderLayout.NORTH);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
 		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
@@ -174,7 +186,7 @@ public class Gui extends JFrame implements Querys{
 		JLabel lblNewLabel_1 = new JLabel("Status:");
 		panelStatus.add(lblNewLabel_1);
 		
-		lblStatus = new JLabel("Ready");
+		lblStatus = new JLabel(STATUS_READY);
 		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		panelStatus.add(lblStatus);
 		
