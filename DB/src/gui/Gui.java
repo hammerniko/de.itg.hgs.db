@@ -58,7 +58,6 @@ public class Gui extends JFrame implements Querys {
 	private JPanel panelTableList;
 	private JPanel panelData;
 	private JPanel[] panelTables;
-	
 
 	/**
 	 * Launch the application.
@@ -89,7 +88,7 @@ public class Gui extends JFrame implements Querys {
 
 		setMenu();
 		buildContenpane();
-		
+
 		addListeners();
 		setContentPane(contentPane);
 	}
@@ -98,56 +97,49 @@ public class Gui extends JFrame implements Querys {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
-		setTableList();
-		
+
+		listTables = new JList<String>();
+		JScrollPane scrollPane = new JScrollPane(listTables);
+		listTables.setBorder(new CompoundBorder());
+		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
+
+		panelTableList = new JPanel();
+		panelTableList.setLayout(new BoxLayout(panelTableList, BoxLayout.X_AXIS));
+		panelTableList.add(scrollPane);
+
 		panelData = new JPanel();
 		panelData.setLayout(new CardLayout(0, 0));
-	
+
 		final JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
 
 		JLabel lblTabellen = new JLabel(TABELLEN);
 		JLabel lblNewLabel_1 = new JLabel("Status:");
-     	lblStatus = new JLabel(STATUS_READY);
+		lblStatus = new JLabel(STATUS_READY);
 		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		panelStatus.add(lblNewLabel_1);
 		panelStatus.add(lblStatus);
-		
+
 		contentPane.add(lblTabellen, BorderLayout.NORTH);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
 		contentPane.add(panelData, BorderLayout.CENTER);
 		contentPane.add(panelTableList, BorderLayout.WEST);
-		
+
 	}
 
-	private void setTableList() {
-		listTables = new JList<String>();
-		JScrollPane scrollPane = new JScrollPane(listTables);
-		listTables.setBorder(new CompoundBorder());
-		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
-		
-		panelTableList = new JPanel();
-		panelTableList.setLayout(new BoxLayout(panelTableList, BoxLayout.X_AXIS));
-		panelTableList.add(scrollPane);
-	}
-
+	
 	private void addListeners() {
-		
+
 		mntmDatenbankSchliessen.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				clickCloseDB();
-				
 			}
 		});
-		
-		
-		listTables.addListSelectionListener(new ListSelectionListener() {
 
+		listTables.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
@@ -156,7 +148,6 @@ public class Gui extends JFrame implements Querys {
 					String tableName = listTables.getSelectedValue();
 					int tableIndex = listTables.getSelectedIndex();
 					lblStatus.setText("Tabelle " + tableName + " gewählt");
-
 
 					// Alle Tabellen aublenden
 					for (int i = 0; i < panelTables.length; i++) {
@@ -168,9 +159,8 @@ public class Gui extends JFrame implements Querys {
 				}
 			}
 		});
-		
-		mntmSpeichernUnter.addActionListener(new ActionListener() {
 
+		mntmSpeichernUnter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				clickSaveAs();
@@ -179,21 +169,21 @@ public class Gui extends JFrame implements Querys {
 	}
 
 	protected void clickCloseDB() {
-		//alle Panels aus panelData entfernen
+		// alle Panels aus panelData entfernen
 		panelData.removeAll();
 		panelTableList.removeAll();
 		listTables = null;
 		contentPane.removeAll();
-	
-	    buildContenpane();
+
+		buildContenpane();
 		addListeners();
 		setContentPane(contentPane);
 		revalidate();
-		
+
 		mntmDatenbankSchliessen.setEnabled(false);
-		mntmImport.setEnabled(true);	
+		mntmImport.setEnabled(true);
 		lblStatus.setText(DATENBANK_GESCHLOSSEN);
-		
+
 	}
 
 	private void setMenu() {
@@ -205,14 +195,14 @@ public class Gui extends JFrame implements Querys {
 
 		mntmImport = new JMenuItem(ODBC_DATENBANK_IMPORTIEREN);
 		mnDatei.add(mntmImport);
-		
+
 		mntmDatenbankSchliessen = new JMenuItem(DATENBANK_SCHLIESSEN);
 		mnDatei.add(mntmDatenbankSchliessen);
 		mntmDatenbankSchliessen.setEnabled(false);
 
 		mntmSpeichernUnter = new JMenuItem(SPEICHERN_UNTER);
 		mntmSpeichernUnter.setEnabled(false);
-		
+
 		mnDatei.add(mntmSpeichernUnter);
 
 		final JMenu mnStammdaten = new JMenu(STAMMDATEN);
@@ -263,21 +253,19 @@ public class Gui extends JFrame implements Querys {
 			e1.printStackTrace();
 		}
 	}
-	
-	
+
 	protected void clickSaveAs() {
 
 	}
 
 	protected void clickImport() {
+		// Konifguriere Menüeinträge
 		mntmDatenbankSchliessen.setEnabled(true);
-		mntmImport.setEnabled(false);		
-		
+		mntmImport.setEnabled(false);
+		mntmSpeichernUnter.setEnabled(true);
+
 		// DB öffnen
 		File fileDB = MyFiles.openFile(this);
-
-		// Dialog save as anbieten
-		mntmSpeichernUnter.setEnabled(true);
 
 		// Verbindung zur Datenbank aufbauen
 		String path = fileDB.getAbsolutePath();
@@ -286,12 +274,11 @@ public class Gui extends JFrame implements Querys {
 		// Alle Tabellen der DB auflisten
 		DBConnect.listTables();
 		String[] tables = DBConnect.getlistOfTables();
-	
 
 		/*
-		 * Für jede Tabelle ein JPanel mit JScrollpane inkl JTable erzeugen und dem Panel
-		 * panelData hinzufügen Das panelData hat ein Cardlayout mit welchem später
-		 * zwischen den Tabellen umegschaltet werden kann
+		 * Für jede Tabelle ein JPanel mit JScrollpane inkl JTable erzeugen und dem
+		 * Panel panelData hinzufügen Das panelData hat ein Cardlayout mit welchem
+		 * später zwischen den Tabellen umegschaltet werden kann
 		 */
 		int anzahlTabellen = tables.length;
 		panelTables = new JPanel[anzahlTabellen];
@@ -303,15 +290,13 @@ public class Gui extends JFrame implements Querys {
 			panelTables[i].setLayout(new BoxLayout(panelTables[i], BoxLayout.X_AXIS));
 			panelTables[i].add(sp);
 			panelData.add(panelTables[i]);
-
 		}
-		
-		//Tabellenliste anzeigen
+
+		// Tabellenliste anzeigen
 		listTables.setListData(tables);
-		lblStatus.setText("DB geladen");
-		
-		lblStatus.setText("Datenbank "+fileDB.getName()+" importiert.");
-		
+	
+		//Status aktualisieren
+		lblStatus.setText("Datenbank " + fileDB.getName() + " importiert.");
 
 	}
 }
