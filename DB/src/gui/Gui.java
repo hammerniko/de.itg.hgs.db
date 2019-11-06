@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -29,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
 import javax.swing.border.BevelBorder;
+import java.awt.CardLayout;
 
 public class Gui extends JFrame implements Querys {
 
@@ -48,11 +50,13 @@ public class Gui extends JFrame implements Querys {
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
 	private JList<String> listTables;
-	private JTable jTable;
+	private JTable jTableDummy;
 	private JLabel lblStatus;
-	private JPanel panelTables;
+	private JPanel panelTableList;
 	private JPanel panelData;
 	private JScrollPane scrollPaneData;
+	private JPanel[] panelTables;
+	private JPanel panelDummy;
 
 	/**
 	 * Launch the application.
@@ -141,9 +145,8 @@ public class Gui extends JFrame implements Querys {
 		final JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 
-		panelTables = new JPanel();
+		panelTableList = new JPanel();
 		panelData = new JPanel();
-		panelData.setLayout(new BoxLayout(panelData, BoxLayout.X_AXIS));
 
 		listTables = new JList<String>();
 		JScrollPane scrollPane = new JScrollPane(listTables);
@@ -155,42 +158,39 @@ public class Gui extends JFrame implements Querys {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting() == false) {
-					
-					//Tabellenname der selektierten Tabelle der Liste
+
+					// Tabellenname der selektierten Tabelle der Liste
 					String tableName = listTables.getSelectedValue();
-					lblStatus.setText("Tabelle "+tableName+" gewählt");
-					
-					//Alle Daten der Tabelle anzeigen
-					jTable = null;
-					jTable = DBConnect.buildJTable(tableName);
-					jTable.revalidate();
-					
-					//testausgabe -> geht
-					JOptionPane.showMessageDialog(null, new JScrollPane(jTable));
-					
-					//Anzeigen der Jtable -> geht nicht
-					//panelData.remove(scrollPaneData);
-					//scrollPaneData = new JScrollPane(jTable);
-				   //// panelData.revalidate();
-				    //panelData.repaint();
-				    				    
-				    
-				    
-				    
-				    
-					
+					int tableIndex = listTables.getSelectedIndex();
+					lblStatus.setText("Tabelle " + tableName + " gewählt");
+
+					// Alle Daten der Tabelle anzeigen
+					// jTable = null;
+					// jTable = DBConnect.buildJTable(tableName);
+					// jTable.revalidate();
+
+					// testausgabe -> geht
+					// JOptionPane.showMessageDialog(null, new JScrollPane(jTable));
+
+					// Alle Tabellen aublenden
+					panelDummy.setVisible(false);
+					for (int i = 0; i < panelTables.length; i++) {
+						panelTables[i].setVisible(false);
+					}
+
+					// Aktive Tabelle einblenden
+					panelTables[tableIndex].setVisible(true);
 				}
 			}
 		});
 
-	
-		panelTables.setLayout(new BoxLayout(panelTables, BoxLayout.X_AXIS));
-		panelTables.add(scrollPane);
+		panelTableList.setLayout(new BoxLayout(panelTableList, BoxLayout.X_AXIS));
+		panelTableList.add(scrollPane);
+		panelData.setLayout(new CardLayout(0, 0));
 
-		
-
-		jTable = new JTable();
-		jTable.setModel(new DefaultTableModel(
+		// dummy table
+		jTableDummy = new JTable();
+		jTableDummy.setModel(new DefaultTableModel(
 				new Object[][] { { null, null, null, null, null, null, null, null, null, null },
 						{ null, null, null, null, null, null, null, null, null, null },
 						{ null, null, null, null, null, null, null, null, null, null },
@@ -206,11 +206,14 @@ public class Gui extends JFrame implements Querys {
 						{ null, null, null, null, null, null, null, null, null, null },
 						{ null, null, null, null, null, null, null, null, null, null }, },
 				new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }));
-		JScrollPane scrollPaneData = new JScrollPane(jTable);
-		panelData.add(scrollPaneData);
+		JScrollPane scrollPaneDummy = new JScrollPane(jTableDummy);
+		panelDummy = new JPanel();
+		panelDummy.setLayout(new BoxLayout(panelDummy, BoxLayout.X_AXIS));
+		panelDummy.add(scrollPaneDummy);
+		panelData.add(panelDummy);
 
 		contentPane.add(panelData, BorderLayout.CENTER);
-		contentPane.add(panelTables, BorderLayout.WEST);
+		contentPane.add(panelTableList, BorderLayout.WEST);
 
 		JLabel lblNewLabel = new JLabel(TABELLEN);
 		contentPane.add(lblNewLabel, BorderLayout.NORTH);
@@ -262,8 +265,30 @@ public class Gui extends JFrame implements Querys {
 
 		// Alle Tabellen der DB auflisten
 		DBConnect.listTables();
-		listTables.setListData(DBConnect.getlistOfTables());
+		String[] tables = DBConnect.getlistOfTables();
+		listTables.setListData(tables);
 		lblStatus.setText("DB geladen");
+
+		/*
+		 * Für jede Tabelle ein JScrollPanel inkl JTable erzeugen und dem Panel
+		 * panelData hinzufügen Das panelData hat ein Cardlayout mit welchem später
+		 * zwischen den Tabellen umegschaltet werden kann
+		 */
+		int anzahlTabellen = tables.length;
+		panelTables = new JPanel[anzahlTabellen];
+
+		for (int i = 0; i < tables.length; i++) {
+			JTable newJTable = DBConnect.buildJTable(tables[i]);
+			JScrollPane sp = new JScrollPane(newJTable);
+			panelTables[i] = new JPanel();
+			panelTables[i].setLayout(new BoxLayout(panelTables[i], BoxLayout.X_AXIS));
+			panelTables[i].add(sp);
+			panelData.add(panelTables[i]);
+
+		}
+		
+		lblStatus.setText("Tabellenansichten erzeugt");
+		
 
 	}
 }
