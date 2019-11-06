@@ -1,8 +1,8 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.EventQueue;
-import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -15,25 +15,27 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.SwingConstants;
-import java.awt.Component;
-import javax.swing.border.BevelBorder;
-import java.awt.CardLayout;
 
 public class Gui extends JFrame implements Querys {
 
+	private static final String DATENBANK_GESCHLOSSEN = "Datenbank geschlossen";
+	private static final String DATENBANK_SCHLIESSEN = "Datenbank schliessen";
+	private static final String DATEI = "Datei";
+	private static final String TITEL = "SSDB 0.1";
+	private static final int HEIGHT = 600;
+	private static final int WIDTH = 800;
 	private static final String SKRIPT = "Skript";
 	private static final String ODBC_DATENBANK_IMPORTIEREN = "ODBC Datenbank Importieren";
 	private static final String SPEICHERN_UNTER = "Speichern unter...";
@@ -49,14 +51,14 @@ public class Gui extends JFrame implements Querys {
 
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
+	private JMenuItem mntmDatenbankSchliessen;
+	private JMenuItem mntmImport;
 	private JList<String> listTables;
-	private JTable jTableDummy;
 	private JLabel lblStatus;
 	private JPanel panelTableList;
 	private JPanel panelData;
-	private JScrollPane scrollPaneData;
 	private JPanel[] panelTables;
-	private JPanel panelDummy;
+	
 
 	/**
 	 * Launch the application.
@@ -80,41 +82,146 @@ public class Gui extends JFrame implements Querys {
 	public Gui() {
 
 		setLookAndFeel();
-
-		// Vollbild
-		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
-		setTitle("SSDB 0.1");
+		setSize(WIDTH, HEIGHT);
+		setTitle(TITEL);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 871, 301);
 
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
+		setMenu();
+		buildContenpane();
+		
+		addListeners();
+		setContentPane(contentPane);
+	}
 
-		JMenu mnDatei = new JMenu("Datei");
-		menuBar.add(mnDatei);
+	private void buildContenpane() {
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		setTableList();
+		
+		panelData = new JPanel();
+		panelData.setLayout(new CardLayout(0, 0));
+	
+		final JPanel panelStatus = new JPanel();
+		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
 
-		JMenuItem mntmImport = new JMenuItem(ODBC_DATENBANK_IMPORTIEREN);
-		mnDatei.add(mntmImport);
+		JLabel lblTabellen = new JLabel(TABELLEN);
+		JLabel lblNewLabel_1 = new JLabel("Status:");
+     	lblStatus = new JLabel(STATUS_READY);
+		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
+		panelStatus.add(lblNewLabel_1);
+		panelStatus.add(lblStatus);
+		
+		contentPane.add(lblTabellen, BorderLayout.NORTH);
+		contentPane.add(panelStatus, BorderLayout.SOUTH);
+		contentPane.add(panelData, BorderLayout.CENTER);
+		contentPane.add(panelTableList, BorderLayout.WEST);
+		
+	}
 
-		mntmSpeichernUnter = new JMenuItem(SPEICHERN_UNTER);
-		mntmSpeichernUnter.setEnabled(false);
+	private void setTableList() {
+		listTables = new JList<String>();
+		JScrollPane scrollPane = new JScrollPane(listTables);
+		listTables.setBorder(new CompoundBorder());
+		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
+		
+		panelTableList = new JPanel();
+		panelTableList.setLayout(new BoxLayout(panelTableList, BoxLayout.X_AXIS));
+		panelTableList.add(scrollPane);
+	}
+
+	private void addListeners() {
+		
+		mntmDatenbankSchliessen.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clickCloseDB();
+				
+			}
+		});
+		
+		
+		listTables.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() == false) {
+
+					// Tabellenname der selektierten Tabelle der Liste
+					String tableName = listTables.getSelectedValue();
+					int tableIndex = listTables.getSelectedIndex();
+					lblStatus.setText("Tabelle " + tableName + " gewählt");
+
+
+					// Alle Tabellen aublenden
+					for (int i = 0; i < panelTables.length; i++) {
+						panelTables[i].setVisible(false);
+					}
+
+					// Aktive Tabelle einblenden
+					panelTables[tableIndex].setVisible(true);
+				}
+			}
+		});
+		
 		mntmSpeichernUnter.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				clickSaveAs();
-
 			}
 		});
+	}
+
+	protected void clickCloseDB() {
+		//alle Panels aus panelData entfernen
+		panelData.removeAll();
+		panelTableList.removeAll();
+		listTables = null;
+		contentPane.removeAll();
+	
+	    buildContenpane();
+		addListeners();
+		setContentPane(contentPane);
+		revalidate();
+		
+		mntmDatenbankSchliessen.setEnabled(false);
+		mntmImport.setEnabled(true);	
+		lblStatus.setText(DATENBANK_GESCHLOSSEN);
+		
+	}
+
+	private void setMenu() {
+		final JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+
+		final JMenu mnDatei = new JMenu(DATEI);
+		menuBar.add(mnDatei);
+
+		mntmImport = new JMenuItem(ODBC_DATENBANK_IMPORTIEREN);
+		mnDatei.add(mntmImport);
+		
+		mntmDatenbankSchliessen = new JMenuItem(DATENBANK_SCHLIESSEN);
+		mnDatei.add(mntmDatenbankSchliessen);
+		mntmDatenbankSchliessen.setEnabled(false);
+
+		mntmSpeichernUnter = new JMenuItem(SPEICHERN_UNTER);
+		mntmSpeichernUnter.setEnabled(false);
+		
 		mnDatei.add(mntmSpeichernUnter);
 
-		JMenu mnStammdaten = new JMenu(STAMMDATEN);
+		final JMenu mnStammdaten = new JMenu(STAMMDATEN);
 		menuBar.add(mnStammdaten);
 
-		JMenuItem mntmNachlassstunden = new JMenuItem(NACHLASSSTUNDEN);
+		final JMenuItem mntmNachlassstunden = new JMenuItem(NACHLASSSTUNDEN);
 		mnStammdaten.add(mntmNachlassstunden);
 
-		JMenuItem mntmLehrer = new JMenuItem(LEHRER);
+		final JMenuItem mntmLehrer = new JMenuItem(LEHRER);
 		mnStammdaten.add(mntmLehrer);
 
 		JMenuItem mntmRume = new JMenuItem(RÄUME);
@@ -136,97 +243,6 @@ public class Gui extends JFrame implements Querys {
 				clickImport();
 			}
 		});
-
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panelStatus = new JPanel();
-		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-
-		panelTableList = new JPanel();
-		panelData = new JPanel();
-
-		listTables = new JList<String>();
-		JScrollPane scrollPane = new JScrollPane(listTables);
-		listTables.setBorder(new CompoundBorder());
-		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
-		listTables.addListSelectionListener(new ListSelectionListener() {
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() == false) {
-
-					// Tabellenname der selektierten Tabelle der Liste
-					String tableName = listTables.getSelectedValue();
-					int tableIndex = listTables.getSelectedIndex();
-					lblStatus.setText("Tabelle " + tableName + " gewählt");
-
-					// Alle Daten der Tabelle anzeigen
-					// jTable = null;
-					// jTable = DBConnect.buildJTable(tableName);
-					// jTable.revalidate();
-
-					// testausgabe -> geht
-					// JOptionPane.showMessageDialog(null, new JScrollPane(jTable));
-
-					// Alle Tabellen aublenden
-					panelDummy.setVisible(false);
-					for (int i = 0; i < panelTables.length; i++) {
-						panelTables[i].setVisible(false);
-					}
-
-					// Aktive Tabelle einblenden
-					panelTables[tableIndex].setVisible(true);
-				}
-			}
-		});
-
-		panelTableList.setLayout(new BoxLayout(panelTableList, BoxLayout.X_AXIS));
-		panelTableList.add(scrollPane);
-		panelData.setLayout(new CardLayout(0, 0));
-
-		// dummy table
-		jTableDummy = new JTable();
-		jTableDummy.setModel(new DefaultTableModel(
-				new Object[][] { { null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null, null, null }, },
-				new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }));
-		JScrollPane scrollPaneDummy = new JScrollPane(jTableDummy);
-		panelDummy = new JPanel();
-		panelDummy.setLayout(new BoxLayout(panelDummy, BoxLayout.X_AXIS));
-		panelDummy.add(scrollPaneDummy);
-		panelData.add(panelDummy);
-
-		contentPane.add(panelData, BorderLayout.CENTER);
-		contentPane.add(panelTableList, BorderLayout.WEST);
-
-		JLabel lblNewLabel = new JLabel(TABELLEN);
-		contentPane.add(lblNewLabel, BorderLayout.NORTH);
-		contentPane.add(panelStatus, BorderLayout.SOUTH);
-		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
-
-		JLabel lblNewLabel_1 = new JLabel("Status:");
-		panelStatus.add(lblNewLabel_1);
-
-		lblStatus = new JLabel(STATUS_READY);
-		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
-		panelStatus.add(lblStatus);
-
 	}
 
 	private void setLookAndFeel() {
@@ -247,12 +263,16 @@ public class Gui extends JFrame implements Querys {
 			e1.printStackTrace();
 		}
 	}
-
+	
+	
 	protected void clickSaveAs() {
 
 	}
 
 	protected void clickImport() {
+		mntmDatenbankSchliessen.setEnabled(true);
+		mntmImport.setEnabled(false);		
+		
 		// DB öffnen
 		File fileDB = MyFiles.openFile(this);
 
@@ -266,11 +286,10 @@ public class Gui extends JFrame implements Querys {
 		// Alle Tabellen der DB auflisten
 		DBConnect.listTables();
 		String[] tables = DBConnect.getlistOfTables();
-		listTables.setListData(tables);
-		lblStatus.setText("DB geladen");
+	
 
 		/*
-		 * Für jede Tabelle ein JScrollPanel inkl JTable erzeugen und dem Panel
+		 * Für jede Tabelle ein JPanel mit JScrollpane inkl JTable erzeugen und dem Panel
 		 * panelData hinzufügen Das panelData hat ein Cardlayout mit welchem später
 		 * zwischen den Tabellen umegschaltet werden kann
 		 */
@@ -287,7 +306,11 @@ public class Gui extends JFrame implements Querys {
 
 		}
 		
-		lblStatus.setText("Tabellenansichten erzeugt");
+		//Tabellenliste anzeigen
+		listTables.setListData(tables);
+		lblStatus.setText("DB geladen");
+		
+		lblStatus.setText("Datenbank "+fileDB.getName()+" importiert.");
 		
 
 	}
