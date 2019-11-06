@@ -14,6 +14,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -22,12 +23,14 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingConstants;
 import java.awt.Component;
 import javax.swing.border.BevelBorder;
 
-public class Gui extends JFrame implements Querys{
+public class Gui extends JFrame implements Querys {
 
 	private static final String SKRIPT = "Skript";
 	private static final String ODBC_DATENBANK_IMPORTIEREN = "ODBC Datenbank Importieren";
@@ -41,12 +44,15 @@ public class Gui extends JFrame implements Querys{
 	private static final String TABELLEN = "Tabellen";
 	private static final String STATUS_READY = "Ready";
 	private static final int ANZAHL_REIHEN_TABELLENLISTE = 15;
-	
+
 	private JPanel contentPane;
 	private JMenuItem mntmSpeichernUnter;
 	private JList<String> listTables;
-	private JTable table;
+	private JTable jTable;
 	private JLabel lblStatus;
+	private JPanel panelTables;
+	private JPanel panelData;
+	private JScrollPane scrollPaneData;
 
 	/**
 	 * Launch the application.
@@ -134,63 +140,89 @@ public class Gui extends JFrame implements Querys{
 
 		final JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		
-		
+
+		panelTables = new JPanel();
+		panelData = new JPanel();
+		panelData.setLayout(new BoxLayout(panelData, BoxLayout.X_AXIS));
+
 		listTables = new JList<String>();
+		JScrollPane scrollPane = new JScrollPane(listTables);
 		listTables.setBorder(new CompoundBorder());
 		listTables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listTables.setVisibleRowCount(ANZAHL_REIHEN_TABELLENLISTE);
-		JPanel panelTables = new JPanel();
-		panelTables.setLayout(new BoxLayout(panelTables, BoxLayout.X_AXIS));
-		JScrollPane scrollPane = new JScrollPane(listTables);
-		//scrollPane.getViewport().setView(listTables);
-		panelTables.add(scrollPane);
-		
-		
-		JPanel panelData = new JPanel();
-		panelData.setLayout(new BoxLayout(panelData, BoxLayout.X_AXIS));
-		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
+		listTables.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() == false) {
+					
+					//Tabellenname der selektierten Tabelle der Liste
+					String tableName = listTables.getSelectedValue();
+					lblStatus.setText("Tabelle "+tableName+" gewählt");
+					
+					//Alle Daten der Tabelle anzeigen
+					jTable = null;
+					jTable = DBConnect.buildJTable(tableName);
+					jTable.revalidate();
+					
+					//testausgabe -> geht
+					JOptionPane.showMessageDialog(null, new JScrollPane(jTable));
+					
+					//Anzeigen der Jtable -> geht nicht
+					//panelData.remove(scrollPaneData);
+					//scrollPaneData = new JScrollPane(jTable);
+				   //// panelData.revalidate();
+				    //panelData.repaint();
+				    				    
+				    
+				    
+				    
+				    
+					
+				}
 			}
-		));
-		JScrollPane scrollPaneData = new JScrollPane(table);
-		panelData.add(scrollPaneData);
+		});
+
+	
+		panelTables.setLayout(new BoxLayout(panelTables, BoxLayout.X_AXIS));
+		panelTables.add(scrollPane);
+
 		
+
+		jTable = new JTable();
+		jTable.setModel(new DefaultTableModel(
+				new Object[][] { { null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null },
+						{ null, null, null, null, null, null, null, null, null, null }, },
+				new String[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" }));
+		JScrollPane scrollPaneData = new JScrollPane(jTable);
+		panelData.add(scrollPaneData);
+
 		contentPane.add(panelData, BorderLayout.CENTER);
 		contentPane.add(panelTables, BorderLayout.WEST);
-		
+
 		JLabel lblNewLabel = new JLabel(TABELLEN);
 		contentPane.add(lblNewLabel, BorderLayout.NORTH);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
 		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
-		
+
 		JLabel lblNewLabel_1 = new JLabel("Status:");
 		panelStatus.add(lblNewLabel_1);
-		
+
 		lblStatus = new JLabel(STATUS_READY);
 		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		panelStatus.add(lblStatus);
-		
-		
 
 	}
 
@@ -228,10 +260,10 @@ public class Gui extends JFrame implements Querys{
 		String path = fileDB.getAbsolutePath();
 		Connection con = DBConnect.getConnection(path);
 
-		//Alle Tabellen der DB auflisten
+		// Alle Tabellen der DB auflisten
 		DBConnect.listTables();
 		listTables.setListData(DBConnect.getlistOfTables());
-	    lblStatus.setText("DB geladen");
+		lblStatus.setText("DB geladen");
 
 	}
 }
