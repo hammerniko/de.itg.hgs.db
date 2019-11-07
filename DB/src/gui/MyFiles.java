@@ -5,6 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -21,13 +25,17 @@ public class MyFiles {
 
 	public static File openFile(Gui parent) {
 		MyFiles.parent = parent;
-		
+
 		// DB Datei auswÃ¤hlen Dialog
 		JFileChooser fc = new JFileChooser();
 
 		// Nur Access DB Dateien oeffnen
-		FileFilter filter = new FileNameExtensionFilter("accdb", "mdb");
-		fc.addChoosableFileFilter(filter);
+		FileFilter filterAccdb = new FileNameExtensionFilter("Access *.accdb File", "accdb");
+		FileFilter filterMdb = new FileNameExtensionFilter("Access *.mdb File", "mdb");
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.addChoosableFileFilter(filterAccdb);
+		fc.addChoosableFileFilter(filterMdb);
+		
 
 		// Dialog zum Oeffnen von Dateien anzeigen
 		int returnValue = fc.showOpenDialog(parent);
@@ -42,35 +50,19 @@ public class MyFiles {
 	}
 
 	public static void saveFile(File f, String path) {
-
+		Path pathToOut = Paths.get(path);
+		Path pathFromIn = Paths.get(f.getAbsolutePath());
+		if (!Files.exists(pathFromIn)) {
+			JOptionPane.showMessageDialog(parent, "File not found", "IO Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		try {
-			File fSrc = f; // Quelldatei
-			File fDes = new File(path); // Zieldatei
-			
-			FileInputStream fis;
-
-			fis = new FileInputStream(fSrc);
-			// Stream fuer Quelldatei
-			FileOutputStream fos = new FileOutputStream(fDes); // Stream fuer
-																// Zieldatei
-
-			byte buf[] = new byte[1024]; // Buffer für gelesene Daten
-			while (fis.read(buf) != -1) { // solange lesen, bis EOF
-				fos.write(buf); // Inhalt schreiben
-			}
-			fis.close();
-			fos.flush();
-			fos.close();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(parent, ERROR_MESSAGE_FILE_NOT_FOUND, ERROR_TYPE_IO, JOptionPane.ERROR_MESSAGE);
-			
+			// EDIT: No checks needed here. Just a copy option in case the file already
+			// exists
+			Files.copy(pathFromIn, pathToOut, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(parent, ERROR_MESSAGE_IO, ERROR_TYPE_IO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(parent, "Schreib-Lese Fehler", "IO Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
