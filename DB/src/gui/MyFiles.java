@@ -26,7 +26,7 @@ public class MyFiles {
 	public static File openFile(Gui parent) {
 		MyFiles.parent = parent;
 
-		// DB Datei auswählen Dialog
+		// DB Datei auswaehlen Dialog
 		JFileChooser fc = new JFileChooser();
 
 		// Nur Access DB Dateien oeffnen

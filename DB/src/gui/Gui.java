@@ -27,6 +27,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.FlowLayout;
+import javax.swing.JButton;
 
 public class Gui extends JFrame implements Querys {
 
@@ -88,9 +90,18 @@ public class Gui extends JFrame implements Querys {
 
 		setMenu();
 		buildContenpane();
-
 		addListeners();
 		setContentPane(contentPane);
+		
+		JPanel panelTop = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panelTop.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		contentPane.add(panelTop, BorderLayout.NORTH);
+		
+				JLabel lblTabellen = new JLabel(TABELLEN);
+				panelTop.add(lblTabellen);
+				
+				
 	}
 
 	private void buildContenpane() {
@@ -114,23 +125,26 @@ public class Gui extends JFrame implements Querys {
 		final JPanel panelStatus = new JPanel();
 		panelStatus.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelStatus.setLayout(new BoxLayout(panelStatus, BoxLayout.X_AXIS));
-
-		JLabel lblTabellen = new JLabel(TABELLEN);
 		JLabel lblNewLabel_1 = new JLabel("Status:");
 		lblStatus = new JLabel(STATUS_READY);
 		lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
 		panelStatus.add(lblNewLabel_1);
 		panelStatus.add(lblStatus);
-
-		contentPane.add(lblTabellen, BorderLayout.NORTH);
 		contentPane.add(panelStatus, BorderLayout.SOUTH);
 		contentPane.add(panelData, BorderLayout.CENTER);
 		contentPane.add(panelTableList, BorderLayout.WEST);
 
 	}
 
-	
 	private void addListeners() {
+		
+		mntmImport.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clickImport();
+			}
+		});
 
 		mntmDatenbankSchliessen.addActionListener(new ActionListener() {
 			@Override
@@ -156,6 +170,9 @@ public class Gui extends JFrame implements Querys {
 
 					// Aktive Tabelle einblenden
 					panelTables[tableIndex].setVisible(true);
+					
+				
+					
 				}
 			}
 		});
@@ -226,13 +243,7 @@ public class Gui extends JFrame implements Querys {
 		JMenuItem mntmSkript = new JMenuItem(SKRIPT);
 		mnHilfe.add(mntmSkript);
 
-		mntmImport.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				clickImport();
-			}
-		});
+		
 	}
 
 	private void setLookAndFeel() {
@@ -259,13 +270,19 @@ public class Gui extends JFrame implements Querys {
 	}
 
 	protected void clickImport() {
+
+		// DB öffnen
+		File fileDB = MyFiles.openFile(this);
+
+		// Prüfen ob File vorhanden, abbrechen wenn nicht
+		if (fileDB == null) {
+			return;
+		}
+
 		// Konifguriere Menüeinträge
 		mntmDatenbankSchliessen.setEnabled(true);
 		mntmImport.setEnabled(false);
 		mntmSpeichernUnter.setEnabled(true);
-
-		// DB öffnen
-		File fileDB = MyFiles.openFile(this);
 
 		// Verbindung zur Datenbank aufbauen
 		String path = fileDB.getAbsolutePath();
@@ -294,8 +311,8 @@ public class Gui extends JFrame implements Querys {
 
 		// Tabellenliste anzeigen
 		listTables.setListData(tables);
-	
-		//Status aktualisieren
+
+		// Status aktualisieren
 		lblStatus.setText("Datenbank " + fileDB.getName() + " importiert.");
 
 	}
