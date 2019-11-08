@@ -36,7 +36,7 @@ public class Gui extends JFrame implements Querys {
 	private static final String DATENBANK_GESCHLOSSEN = "Datenbank geschlossen";
 	private static final String DATENBANK_SCHLIESSEN = "Datenbank schliessen";
 	private static final String DATEI = "Datei";
-	private static final String TITEL = "SSDB 0.1";
+	private static final String TITEL = "Simple Access DB Viewer 0.1 "+"\u00a9"+" N.Hammer";
 	private static final int HEIGHT = 600;
 	private static final int WIDTH = 800;
 
