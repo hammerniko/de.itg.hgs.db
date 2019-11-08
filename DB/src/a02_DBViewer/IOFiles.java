@@ -15,15 +15,13 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class IOFiles {
+public class IOFiles implements ErrorMessage {
 
 	private static final String FILE_EXTENSION_MDB = "mdb";
 	private static final String ACCESS_MDB_FILE = "Access *.mdb File";
 	private static final String FILE_EXTENSUION_ACCDB = "accdb";
 	private static final String ACCESS_ACCDB_FILE = "Access *.accdb File";
-	private static final String ERROR_TYPE_IO = "IO Error";
-	private static final String ERROR_MESSAGE_IO = "Schreib-Lese Fehler";
-	private static final String ERROR_MESSAGE_FILE_NOT_FOUND = "File not found";
+	
 	static File fileDB;
 	static Gui parent;
 
