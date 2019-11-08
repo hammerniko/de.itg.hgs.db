@@ -1,4 +1,4 @@
-package gui;
+package a02_DBViewer;
 
 import java.io.File;
 import java.io.FileInputStream;
