@@ -244,7 +244,7 @@ public class Gui extends JFrame implements Querys {
 	protected void clickImport() {
 
 		// DB öffnen
-		File fileDB = MyFiles.openFile(this);
+		File fileDB = IOFiles.openFile(this);
 
 		// Prüfen ob File vorhanden, abbrechen wenn nicht
 		if (fileDB == null) {
