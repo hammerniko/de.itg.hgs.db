@@ -28,9 +28,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.FlowLayout;
-import javax.swing.JButton;
 
 public class Gui extends JFrame implements Querys {
+	
+	DBConnect db;
 
 	private static final String DATENBANK_GESCHLOSSEN = "Datenbank geschlossen";
 	private static final String DATENBANK_SCHLIESSEN = "Datenbank schliessen";
@@ -38,15 +39,9 @@ public class Gui extends JFrame implements Querys {
 	private static final String TITEL = "SSDB 0.1";
 	private static final int HEIGHT = 600;
 	private static final int WIDTH = 800;
-	private static final String SKRIPT = "Skript";
+
 	private static final String ODBC_DATENBANK_IMPORTIEREN = "ODBC Datenbank Importieren";
 	private static final String SPEICHERN_UNTER = "Speichern unter...";
-	private static final String STAMMDATEN = "Stammdaten";
-	private static final String NACHLASSSTUNDEN = "Nachlassstunden";
-	private static final String LEHRER = "Lehrer";
-	private static final String RÄUME = "Räume";
-	private static final String KLASSEN = "Klassen";
-	private static final String HILFE = "Hilfe";
 	private static final String TABELLEN = "Tabellen";
 	private static final String STATUS_READY = "Ready";
 	private static final int ANZAHL_REIHEN_TABELLENLISTE = 15;
@@ -82,6 +77,8 @@ public class Gui extends JFrame implements Querys {
 	 */
 	public Gui() {
 
+		db = new DBConnect(this);
+		
 		setLookAndFeel();
 		setSize(WIDTH, HEIGHT);
 		setTitle(TITEL);
@@ -92,16 +89,15 @@ public class Gui extends JFrame implements Querys {
 		buildContenpane();
 		addListeners();
 		setContentPane(contentPane);
-		
+
 		JPanel panelTop = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panelTop.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		contentPane.add(panelTop, BorderLayout.NORTH);
-		
-				JLabel lblTabellen = new JLabel(TABELLEN);
-				panelTop.add(lblTabellen);
-				
-				
+
+		JLabel lblTabellen = new JLabel(TABELLEN);
+		panelTop.add(lblTabellen);
+
 	}
 
 	private void buildContenpane() {
@@ -137,7 +133,7 @@ public class Gui extends JFrame implements Querys {
 	}
 
 	private void addListeners() {
-		
+
 		mntmImport.addActionListener(new ActionListener() {
 
 			@Override
@@ -170,9 +166,7 @@ public class Gui extends JFrame implements Querys {
 
 					// Aktive Tabelle einblenden
 					panelTables[tableIndex].setVisible(true);
-					
-				
-					
+
 				}
 			}
 		});
@@ -222,28 +216,6 @@ public class Gui extends JFrame implements Querys {
 
 		mnDatei.add(mntmSpeichernUnter);
 
-		final JMenu mnStammdaten = new JMenu(STAMMDATEN);
-		menuBar.add(mnStammdaten);
-
-		final JMenuItem mntmNachlassstunden = new JMenuItem(NACHLASSSTUNDEN);
-		mnStammdaten.add(mntmNachlassstunden);
-
-		final JMenuItem mntmLehrer = new JMenuItem(LEHRER);
-		mnStammdaten.add(mntmLehrer);
-
-		JMenuItem mntmRume = new JMenuItem(RÄUME);
-		mnStammdaten.add(mntmRume);
-
-		JMenuItem mntmKlassen = new JMenuItem(KLASSEN);
-		mnStammdaten.add(mntmKlassen);
-
-		JMenu mnHilfe = new JMenu(HILFE);
-		menuBar.add(mnHilfe);
-
-		JMenuItem mntmSkript = new JMenuItem(SKRIPT);
-		mnHilfe.add(mntmSkript);
-
-		
 	}
 
 	private void setLookAndFeel() {
@@ -286,11 +258,11 @@ public class Gui extends JFrame implements Querys {
 
 		// Verbindung zur Datenbank aufbauen
 		String path = fileDB.getAbsolutePath();
-		Connection con = DBConnect.getConnection(path);
+		Connection con = db.getConnection(path);
 
 		// Alle Tabellen der DB auflisten
-		DBConnect.listTables();
-		String[] tables = DBConnect.getlistOfTables();
+		db.listTables();
+		String[] tables = db.getlistOfTables();
 
 		/*
 		 * Für jede Tabelle ein JPanel mit JScrollpane inkl JTable erzeugen und dem
@@ -301,7 +273,7 @@ public class Gui extends JFrame implements Querys {
 		panelTables = new JPanel[anzahlTabellen];
 
 		for (int i = 0; i < tables.length; i++) {
-			JTable newJTable = DBConnect.buildJTable(tables[i]);
+			JTable newJTable = db.buildJTable(tables[i]);
 			JScrollPane sp = new JScrollPane(newJTable);
 			panelTables[i] = new JPanel();
 			panelTables[i].setLayout(new BoxLayout(panelTables[i], BoxLayout.X_AXIS));
