@@ -42,7 +42,9 @@ public class IOFiles implements ErrorMessage {
 		/* Abfrage, ob auf oeffnen" geklickt wurde */
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 
-			fileDB = fc.getSelectedFile();
+			fileDB = fc.getSelectedFile(); 
+			
+			
 		}
 
 		return fileDB;
